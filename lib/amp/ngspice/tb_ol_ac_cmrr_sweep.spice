@@ -1,0 +1,87 @@
+* Opamp open loop AC common-mode input testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0   {pVDD}
+VSS vss 0   0
+VCM cm  vss {pVDD/2}
+
+vin in cm dc 0 ac 1
+
+ibad vdd ibad {pIB}
+xad  xad cm oad ibad vdd vss ampa
+ciad in  xad 1T
+lfad xad yad 1T
+rfad yad oad 1
+clad oad cm  {pC}
+
+ibac vdd ibac {pIB}
+xac  xac in oac ibac vdd vss ampa
+ciac in  xac 1T
+lfac xac yac 1T
+rfac yac oac 1
+clac oac cm  {pC}
+
+ibbd vdd ibbd {pIB}
+xbd  xbd cm obd ibbd vdd vss ampb
+cibd in  xbd 1T
+lfbd xbd ybd 1T
+rfbd ybd obd 1
+clbd obd cm  {pC}
+
+ibbc vdd ibbc {pIB}
+xbc  xbc in obc ibbc vdd vss ampb
+cibc in  xbc 1T
+lfbc xbc ybc 1T
+rfbc ybc obc 1
+clbc obc cm  {pC}
+
+.save v(oad) v(oac) v(obd) v(obc)
+
+.ac dec 100 0.1 0.1G
+.option gmin=1e-15
+
+.control
+	echo "# OpAmpA Common-mode AC sweep" >  ../data/ampa_ac_cmrr_sweep.csv
+	echo "# vcm,ava1Hz"                  >> ../data/ampa_ac_cmrr_sweep.csv
+
+	echo "# OpAmpB Common-mode AC sweep" >  ../data/ampb_ac_cmrr_sweep.csv
+	echo "# vcm,avb1Hz"                  >> ../data/ampb_ac_cmrr_sweep.csv
+
+	let vx = 0
+	dowhile vx < 3.01
+		echo ">>> VDD: $&vx
+		alter vcm dc=vx
+
+		run
+
+		let dfa = db(oad)
+		let cma = db(oac)
+		let cmrra = dfa-cma
+
+		let dfb = db(obd)
+		let cmb = db(obc)
+		let cmrrb = dfb-cmb
+		
+		meas ac cmrra1Hz find cmrra at=1
+		meas ac cmrrb1Hz find cmrrb at=1
+
+		echo "$&vx,$&cmrra1Hz"        >> ../data/ampa_ac_cmrr_sweep.csv
+		echo "$&vx,$&cmrrb1Hz"        >> ../data/ampb_ac_cmrr_sweep.csv
+		
+		destroy all
+		let vx = vx+1
+
+	end		
+	
+		
+.endc
+
+.end

@@ -1,0 +1,42 @@
+* opamp voltage follower testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+.param pAMP = {50m}
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vin in cm dc 0 ac 1 PULSE({-pAMP} {pAMP} {pT/4} {pT*1m} {pT*1m} {pT/2} {pT})
+
+iba vdd iba {pIB}
+xa  oa in oa iba vdd vss ampa
+ca  oa cm {pC}
+ra  oa cm {pR}
+
+ibb vdd ibb {pIB}
+xb  ob in ob ibb vdd vss ampb
+cb  ob cm {pC}
+rb  ob cm {pR}
+
+.option gmin=1e-15
+*.option method=Gear
+.tran {pT*1m} {pT}
+
+.control
+
+	run
+	plot in oa ob
+	wrdata ../data/ampa_vf_tran_step_small.txt in oa
+	wrdata ../data/ampb_vf_tran_step_small.txt in ob
+	
+.endc
+
+.end

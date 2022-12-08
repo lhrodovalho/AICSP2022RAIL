@@ -1,0 +1,77 @@
+* Opamp open loop AC common-mode input testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+VCM cm vss 1.5
+
+vin in cm dc 0 ac 1
+
+vda vda vss {pVDD}
+iba vdd iba {pIB}
+xa  xa cm oa iba vda vss ampa
+cia in xa 1T
+lfa xa ya 1T
+rfa ya oa 1
+cla oa cm {pC}
+rla oa cm {pR}
+
+vdb vdb vss {pVDD}
+ibb vdd ibb {pIB}
+xb  xb cm ob ibb vdb vss ampb
+cib in xb 1T
+lfb xb yb 1T
+rfb yb ob 1
+clb ob cm {pC}
+rlb ob cm {pR}
+
+.ac dec 100 0.1 0.1G
+.option gmin=1e-15
+.save v(oa) v(ob)
+.control
+
+	echo "# OpAmp-A differential input AC sweep" >  ../data/ampa_ol_ac_df_sweep.csv
+	echo "# vcm,av1Hz,gbw,pm"                    >> ../data/ampa_ol_ac_df_sweep.csv
+
+	echo "# OpAmp-B differential input AC sweep" >  ../data/ampb_ol_ac_df_sweep.csv
+	echo "# vcm,av1Hz,gbw,pm"                    >> ../data/ampb_ol_ac_df_sweep.csv
+
+	let vx = 0
+	dowhile vx < 3.01
+		echo ">>> VDD: $&vx
+		alter vcm dc=vx
+		run
+
+		let ava = db(oa)
+		let avb = db(ob)
+
+		let pha = cphase(oa)*180/pi
+		let phb = cphase(ob)*180/pi
+	
+		meas ac ava1Hz find ava at=1
+		meas ac avb1Hz find avb at=1
+
+		meas ac gbwa when ava=0
+		meas ac gbwb when avb=0
+
+		meas ac pma find pha at=gbwa
+		meas ac pmb find phb at=gbwb
+
+		echo "$&vx,$&ava1Hz,$&gbwa,$&pma"        >> ../data/ampa_ol_ac_df_sweep.csv
+		echo "$&vx,$&avb1Hz,$&gbwb,$&pmb"        >> ../data/ampb_ol_ac_df_sweep.csv
+
+		destroy all
+		let vx = vx+0.05
+		
+	end		
+.endc
+
+.end

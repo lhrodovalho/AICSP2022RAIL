@@ -1,0 +1,105 @@
+* Opamp open loop AC common-mode input testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=1
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "ampc.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vin in cm dc 0 ac 1
+
+vda vda vss {pVDD}
+iba vdd iba {pIB}
+xa  xa cm oa iba vda vss ampa
+cia xa in 1T
+lfa xa za 1T
+rfa za oa 1
+cla oa cm {pC}
+rla oa cm {pR}
+
+vdb vdb vss {pVDD}
+ibb vdd ibb {pIB}
+xb  xb cm ob ibb vdb vss ampb
+cib xb in 1T
+lfb xb zb 1T
+rfb zb ob 1
+clb ob cm {pC}
+rlb ob cm {pR}
+
+vdc vdc vss {pVDD}
+ibc vdd ibc {pIB}
+xc  xc cm oc ibc vdc vss ampc
+cic xc in 1T
+lfc xc zc 1T
+rfc zc oc 1
+clc oc cm {pC}
+rlc oc cm {pR}
+
+.option gmin=1e-15
+.option keepopinfo
+.save v(oa) v(ob) v(oc) v(cm)
+.control
+
+	echo "# OpAmp-A MC mis"   >  ../data/ampa_ac_df_mc_mis.csv
+	echo "# vcm,av1Hz,gbw,pm" >> ../data/ampa_ac_df_mc_mis.csv
+
+	echo "# OpAmp-B MC mis"   >  ../data/ampb_ac_df_mc_mis.csv
+	echo "# vcm,av1Hz,gbw,pm" >> ../data/ampb_ac_df_mc_mis.csv
+
+	echo "# OpAmp-C MC mis"   >  ../data/ampc_ac_df_mc_mis.csv
+	echo "# vcm,av1Hz,gbw,pm" >> ../data/ampc_ac_df_mc_mis.csv
+
+	let run = 1
+	dowhile run <= 1000
+
+		echo
+		echo ">>> run $&run"
+		echo
+	
+		reset
+		op
+
+		ac dec 100 0.1 0.1G
+		let vosa = op1.v(oa)-op1.v(cm)
+		let vosb = op1.v(ob)-op1.v(cm)
+		let vosc = op1.v(oc)-op1.v(cm)
+
+		let ava = db(oa)
+		let avb = db(ob)
+		let avc = db(oc)
+
+		let pha = cphase(oa)*180/pi
+		let phb = cphase(ob)*180/pi
+		let phc = cphase(oc)*180/pi
+	
+		meas ac ava1Hz find ava at=1
+		meas ac avb1Hz find avb at=1
+		meas ac avc1Hz find avc at=1
+
+		meas ac gbwa when ava=0
+		meas ac gbwb when avb=0
+		meas ac gbwc when avc=0
+
+		meas ac pma find pha at=gbwa
+		meas ac pmb find phb at=gbwb
+		meas ac pmc find phc at=gbwc
+
+		echo "$&run,$&ava1Hz,$&gbwa,$&pma,$&vosa" >> ../data/ampa_ac_df_mc_mis.csv
+		echo "$&run,$&avb1Hz,$&gbwb,$&pmb,$&vosb" >> ../data/ampb_ac_df_mc_mis.csv
+		echo "$&run,$&avc1Hz,$&gbwc,$&pmc,$&vosc" >> ../data/ampc_ac_df_mc_mis.csv
+
+		destroy all
+		let run = run+1
+		
+	end		
+.endc
+
+.end

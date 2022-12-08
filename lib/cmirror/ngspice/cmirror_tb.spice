@@ -1,0 +1,51 @@
+* Current mirror testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "cmirror.spice"
+
+.param pVDD = 5.0
+.param pII = -1u
+
+VSS  vss 0 0
+
+vo o vss 1.5
+
+iia ia vss {pII}
+xa ia oa vss cmirrora
+eoa oa vss o vss 1
+
+iib ib vss {pII}
+xb  ib ob vss cmirrorb
+eob ob vss o vss 1
+
+iic ic vss {pII}
+xc ic oc vss cmirrorc
+eoc oc vss o vss 1
+
+.option gmin=1e-12
+.dc vo 0 {pVDD} {pVDD/1k}
+
+.control
+	run
+
+	let ioa = -i(eoa)
+	let iob = -i(eob)
+	let ioc = -i(eoc)
+	
+	let roa = 1/deriv(ioa)
+	let rob = 1/deriv(iob)
+	let roc = 1/deriv(ioc)
+		 
+	plot ioa iob ioc
+	plot roa rob roc ylog
+	
+	wrdata ../data/io.txt ioa iob ioc
+	wrdata ../data/ro.txt roa rob roc
+	
+.endc
+
+.end

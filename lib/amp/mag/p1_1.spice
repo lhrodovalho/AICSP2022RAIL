@@ -1,0 +1,4 @@
+* SPICE3 file created from p1_1.ext - technology: sky130A
+
+X0 a_90_0# a_n10_n160# a_n80_0# w_n160_n80# sky130_fd_pr__pfet_g5v0d10v5 ad=7e+11p pd=4.7e+06u as=7e+11p ps=4.7e+06u w=2e+06u l=500000u
+X1 a_90_n960# a_n10_n990# a_n80_n960# w_n160_n1200# sky130_fd_pr__pfet_g5v0d10v5 ad=7e+11p pd=4.7e+06u as=7e+11p ps=4.7e+06u w=2e+06u l=500000u

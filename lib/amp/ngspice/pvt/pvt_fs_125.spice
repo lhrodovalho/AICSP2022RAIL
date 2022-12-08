@@ -1,0 +1,70 @@
+* Opamp open loop AC differential input testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" fs
+.param mc_mm_switch=0
+
+.temp 125
+
+.include "../array.spice"
+.include "../ampa.spice"
+.include "../ampb.spice"
+.include "../params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vin in cm dc 0 ac 1
+
+vda vda vss {pVDD}
+iba vdd iba {pIB}
+xa  xa cm oa iba vda vss ampa
+cia xa in 1T
+lfa xa za 1T
+rfa za oa 1
+cla oa cm {pC}
+rla oa cm {pR}
+
+vdb vdb vss {pVDD}
+ibb vdd ibb {pIB}
+xb  xb cm ob ibb vdb vss ampb
+cib xb in 1T
+lfb xb zb 1T
+rfb zb ob 1
+clb ob cm {pC}
+rlb ob cm {pR}
+
+.option gmin=1e-15
+.control
+
+	op
+	ac dec 100 0.1 0.1G
+
+	let vosa = op1.v(oa)-op1.v(cm)
+	let vosb = op1.v(ob)-op1.v(cm)
+
+	let ava = db(oa)
+	let avb = db(ob)
+
+	let pha = cphase(oa)*180/pi
+	let phb = cphase(ob)*180/pi
+	
+	meas ac ava1Hz find ava at=1
+	meas ac avb1Hz find avb at=1
+
+	meas ac gbwa when ava=0
+	meas ac gbwb when avb=0
+
+	meas ac pma find pha at=gbwa
+	meas ac pmb find phb at=gbwb
+	
+	echo "# PVT FS 125 ºC"                  >  ../../data/pvt_fs_125.csv
+	echo "# AMP,av,gbw,pm,vos"              >> ../../data/pvt_fs_125.csv
+	echo "RTA,$&ava1Hz,$&gbwa,$&pma,$&vosa" >> ../../data/pvt_fs_125.csv
+	echo "ICT,$&avb1Hz,$&gbwb,$&pmb,$&vosb" >> ../../data/pvt_fs_125.csv
+
+	exit	
+.endc
+
+.end

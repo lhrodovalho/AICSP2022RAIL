@@ -1,0 +1,72 @@
+* Opamp open loop AC common-mode input testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vin in cm dc 0 ac 1
+
+ibad vdd ibad {pIB}
+xad  xad cm oad ibad vdd vss ampa
+ciad in  xad 1T
+lfad oad xad 1T
+clad oad cm {pC}
+
+ibac vdd ibac {pIB}
+xac  xac in oac ibac vdd vss ampa
+ciac in  xac 1T
+lfac oac xac 1T
+clac oac cm {pC}
+
+ibbd vdd ibbd {pIB}
+xbd  xbd cm obd ibbd vdd vss ampb
+cibd in  xbd 1T
+lfbd obd xbd 1T
+clbd obd cm {pC}
+
+ibbc vdd ibbc {pIB}
+xbc  xbc in obc ibbc vdd vss ampb
+cibc in  xbc 1T
+lfbc obc xbc 1T
+clbc obc cm {pC}
+
+.ac dec 100 0.1 0.1G
+.option gmin=1e-15
+
+.control
+
+	run
+
+	let dfa = db(oad)
+	let cma = db(oac)
+	let cmrra = dfa-cma
+
+	let dfb = db(obd)
+	let cmb = db(obc)
+	let cmrrb = dfb-cmb
+	
+	plot dfa cma cmrra
+	plot dfb cmb cmrrb
+	plot cmrra cmrrb
+	
+	meas ac cmrra1Hz find cmrra at=1
+	meas ac cmrrb1Hz find cmrrb at=1
+	
+	wrdata ../data/ampa_ol_ac_cm_av.txt cma
+	wrdata ../data/ampb_ol_ac_cm_av.txt cmb
+
+	wrdata ../data/ampa_ol_ac_cmrr.txt cmrra
+	wrdata ../data/ampb_ol_ac_cmrr.txt cmrrb
+		
+.endc
+
+.end

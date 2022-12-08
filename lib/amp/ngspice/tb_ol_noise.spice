@@ -1,0 +1,46 @@
+* Opamp open loop noise testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vin in cm dc 0 ac 1
+
+vda vda vss {pVDD}
+iba vdd iba {pIB}
+xa  xa cm oa iba vda vss ampa
+cia xa in 100T
+lfa xa oa 100T
+cla oa cm {pC}
+rla oa cm {pR}
+
+vdb vdb vss {pVDD}
+ibb vdd ibb {pIB}
+xb  xb cm ob ibb vdb vss ampb
+cib xb in 100T
+lfb xb ob 100T
+clb ob cm {pC}
+rlb ob cm {pR}
+
+.option gmin=1e-15
+
+.control
+
+	noise v(oa) vin dec 100 1 1G
+	noise v(ob) vin dec 100 1 1G
+	
+	plot noise1.onoise_spectrum noise3.onoise_spectrum loglog
+	plot noise1.inoise_spectrum noise3.inoise_spectrum loglog
+		
+.endc
+
+.end

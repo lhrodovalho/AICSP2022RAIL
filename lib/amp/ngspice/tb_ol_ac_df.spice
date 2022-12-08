@@ -1,0 +1,78 @@
+* Opamp open loop AC differential input testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=1
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vin in cm dc 0 ac 1
+
+vda vda vss {pVDD}
+iba vdd iba {pIB}
+xa  xa cm oa iba vda vss ampa
+cia xa in 1T
+lfa xa oa 1T
+rfa za oa 1
+cla oa cm {pC}
+rla oa cm {pR}
+
+vdb vdb vss {pVDD}
+ibb vdd ibb {pIB}
+xb  xb cm ob ibb vdb vss ampb
+cib xb in 1T
+lfb xb zb 1T
+rfb zb ob 1
+clb ob cm {pC}
+rlb ob cm {pR}
+
+.option gmin=1e-15
+
+.control
+
+	op
+	ac dec 100 0.1 0.1G
+	
+	let idda = op1.i(vda)
+	let iddb = op1.i(vdb)
+	
+	print  idda iddb
+
+	let ava = db(ac1.oa)
+	let avb = db(ac1.ob)
+	
+	let pha = cphase(ac1.oa)*180/pi
+	let phb = cphase(ac1.ob)*180/pi
+
+	plot ava avb
+	plot pha phb
+
+	meas ac ava100mhz find ava at=100m
+	meas ac avb100mhz find avb at=100m	
+	
+	meas ac gbwa when ava=0
+	meas ac gbwb when avb=0
+
+	meas ac pma find pha at=gbwa
+	meas ac pmb find phb at=gbwb
+	
+	let foma = 100*gbwa*10p/idda
+	let fomb = 100*gbwb*10p/iddb
+	print foma fomb
+	
+	wrdata ../data/ampa_ol_ac_df_av.txt ava
+	wrdata ../data/ampa_ol_ac_df_ph.txt pha
+
+	wrdata ../data/ampb_ol_ac_df_av.txt avb
+	wrdata ../data/ampb_ol_ac_df_ph.txt phb	
+		
+.endc
+
+.end

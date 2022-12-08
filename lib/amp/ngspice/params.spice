@@ -1,0 +1,9 @@
+* params
+
+.param pVDD = 3.0
+.param pIB  = 4u
+.param pC   = 10p
+.param pR   = 1T
+.param pAMP = 1.45
+.param pT   = 10u
+

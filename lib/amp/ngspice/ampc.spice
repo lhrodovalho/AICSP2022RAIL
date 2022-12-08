@@ -1,0 +1,57 @@
+* Operational amplifier A
+
+.subckt ampc im ip o ib vdd vss 
+
+x1nb ib  ib  dn1 vss n2_2
+x1na dn1 ib  vss vss n1_4
+
+x2pa dp2 gpa vdd vdd p1_4
+x2pb gpa gpa dp2 vdd p2_2
+x2pc gpb gpb gpa vdd p1_4
+x2pd gpb gpb gpa vdd p1_4
+x2nb gpb ib  dn2 vss n2_2
+x2na dn2 ib  vss vss n1_4
+
+x3pa dp3 gpa vdd vdd p1_4
+x3pb gnb gpa dp3 vdd p2_2
+x3nd gnb gnb gna vss n1_4
+x3nc gnb gnb gna vss n1_4
+x3nb gna gna dn3 vss n2_2
+x3na dn3 gna vss vss n1_4
+
+x4pa dp4 gpa vdd vdd p1_4
+x4pb x   gpa dp4 vdd p2_2
+x4pc yl  im  x   vdd p4_1
+x4nb kl  kl  yl  vss n2_2
+x4na yl  kl  vss vss n1_4
+
+x5pa dp5 gpa vdd vdd p1_4
+x5pb x   gpa dp5 vdd p2_2
+x5pc yr  ip  x   vdd p4_1
+x5nb kr  kl  yr  vss n2_2
+x5na yr  kl  vss vss n1_4
+
+x6pa dp6 gpa vdd vdd p1_4
+x6pb jl  gpa dp6 vdd p2_2
+x6pc kl  gpb jl  vdd p1_4
+x6nc jl  gnb kl  vss n1_4
+x6nb kl  kl  yl  vss n2_2
+x6na yl  kl  vss vss n1_4
+
+x7pa dp7 gpa vdd vdd p1_4
+x7pb jr  gpa dp7 vdd p2_2
+x7pc kr  gpb jr  vdd p1_4
+x7nc jr  gnb kr  vss n1_4
+x7nb kr  kl  yr  vss n2_2
+x7na yr  kl  vss vss n1_4
+
+x8pa dp8 jr  vdd vdd p2_2
+x8pb o   jr  dp8 vdd p4_1
+x8nb o   kr  dn8 vss n4_1
+x8na dn8 kr  vss vss n2_2
+
+cj o jr 0.8p
+ck o kr 0.8p
+
+.ends
+

@@ -1,0 +1,46 @@
+* Opamp open loop DC differential input testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vx  x  cm 0
+bin in cm v = {v(x,cm)*v(x,cm)*v(x,cm)}
+eip ip cm in cm  0.5
+eim im cm in cm -0.5
+
+iba vdd ia {pIB}
+xa  im ip oa ia vdd vss ampa
+
+ibb vdd ib {pIB}
+xb  im ip ob ib vdd vss ampb
+
+.param dx = 1m
+.dc vx {-pow(dx,1/3)} {pow(dx,1/3)} {pow(dx,1/3)/1k}
+.option gmin=1e-15
+
+.control
+
+	run
+
+	let in = in-cm
+	let ava  = db(abs(deriv(oa))/abs(deriv(in)))
+	let avb  = db(abs(deriv(ob))/abs(deriv(in)))
+	plot oa vs in ob vs in
+	plot ava vs oa avb vs ob
+	
+	wrdata ../data/ampa_ol_dc_df.txt in oa ava
+	wrdata ../data/ampb_ol_dc_df.txt in ob avb
+		
+.endc
+
+.end

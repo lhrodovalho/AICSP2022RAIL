@@ -1,0 +1,45 @@
+* Current mirror testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+vx  x  cm 0
+
+vda vda vss {pVDD}
+iba vdd iba {pIB}
+xa  oa cm oa iba vda vss ampa
+boa oa cm v = {v(x,cm)*v(x,cm)*v(x,cm)}
+
+vdb vdb vss {pVDD}
+ibb vdd ibb {pIB}
+xb  ob cm ob ibb vdb vss ampb
+bob ob cm v = {v(x,cm)*v(x,cm)*v(x,cm)}
+
+.option gmin=1e-15
+.param dx = 100m
+.dc vx {-pow(dx,1/3)} {pow(dx,1/3)} {pow(dx,1/3)/1k}
+
+.control
+	run
+
+	let ioa = i(boa)
+	let iob = i(bob)
+	plot oa vs ioa ob vs iob
+	
+	wrdata ../data/ampa_vf_dc_io.txt oa ioa
+	wrdata ../data/ampb_vf_dc_io.txt ob iob
+	
+			
+.endc
+
+.end

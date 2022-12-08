@@ -1,0 +1,56 @@
+* opamp voltage follower testbench
+
+* Include SkyWater sky130 device models
+.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.param mc_mm_switch=0
+
+.include "array.spice"
+.include "ampa.spice"
+.include "ampb.spice"
+.include "params.spice"
+
+VDD vdd 0 dc {pVDD}
+VSS vss 0 0
+ECM cm vss vdd vss 0.5
+
+.param pAMP = {pVDD/2-50m}
+
+vin in cm dc 0 ac 1 sine(0 {pAMP} {1/pT})
+
+iba vdd iba {pIB}
+xa  oa in oa iba vdd vss ampa
+ca  oa cm {pC}
+ra  oa cm {pR}
+
+ibb vdd ibb {pIB}
+xb  ob in ob ibb vdd vss ampb
+cb  ob cm {pC}
+rb  ob cm {pR}
+
+.option gmin=1e-15
+*.option method=Gear
+.tran {pT*1m} {5*pT} {pT}
+
+.control
+
+	run
+	plot in oa ob
+
+	wrdata ../data/ampa_vf_tran_sine.txt in oa
+	wrdata ../data/ampb_vf_tran_sine.txt in ob
+	
+	set specwindow = blackman
+
+	setplot tran1
+	linearize v(oa)
+	fourier 100k v(oa)
+	plot mag(v(oa))
+
+	setplot tran1
+	linearize v(ob)
+	fourier 100k v(ob)
+	
+	
+.endc
+
+.end

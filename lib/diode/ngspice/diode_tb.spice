@@ -1,0 +1,35 @@
+* Current mirror testbench
+
+* Include SkyWater sky130 device models
+*.lib "/usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.lib "../../../sky130_fd_pr/models/sky130.lib.spice" tt
+.param mc_mm_switch=0
+.param mc_pr_switch=0
+
+vi in 0 1.5
+
+ea a 0 in 0 1
+XA a a 0 0 sky130_fd_pr__nfet_g5v0d10v5 ad=4e+11p pd=2.8e+06u as=4e+11p ps=2.8e+06u w=1.0 l=0.5 m=1
+
+eb b 0 in 0 1
+XB0 b b x c sky130_fd_pr__nfet_g5v0d10v5 ad=4e+11p pd=2.8e+06u as=4e+11p ps=2.8e+06u w=1.0 l=0.5 m=1
+XB1 b b d d sky130_fd_pr__nfet_g5v0d10v5 ad=4e+11p pd=2.8e+06u as=4e+11p ps=2.8e+06u w=1.0 l=0.5 m=1
+XB2 x b 0 c sky130_fd_pr__nfet_g5v0d10v5 ad=4e+11p pd=2.8e+06u as=4e+11p ps=2.8e+06u w=1.0 l=0.5 m=1
+VC c d 0
+
+.option gmin=1e-15
+.control
+	dc vi 1m 1 1m
+
+	let ia = -i(ea)
+	let ib = -i(eb)
+	let ic = -i(vc)
+	
+	plot ia ib ic ylog
+	plot a vs ia b vs ib c vs ib xlog
+	
+	wrdata diode.txt ia ib ic c
+	
+.endc
+
+.end

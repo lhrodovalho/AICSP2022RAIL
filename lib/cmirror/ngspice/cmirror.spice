@@ -1,0 +1,23 @@
+* current mirrors
+
+.subckt cmirrora in out vss 
+x1b in  in  x1  vss n1_4
+x1a x1  in  vss vss n1_4
+x2b out in  x2  vss n1_4
+x2a x2  in  vss vss n1_4
+.ends
+
+.subckt cmirrorb in out vss
+x1b in  in  x1  vss n4_1
+x1a x1  in  vss vss n1_4
+x2b out in  x2  vss n4_1
+x2a x2  in  vss vss n1_4
+.ends
+
+.subckt cmirrorc in out vss
+x1b in  in  x1  bn  n4_1
+x1a x1  in  vss vss n1_4
+x2b out in  x2  bn  n4_1
+x2a x2  in  vss vss n1_4
+x3  in  in  bn  bn  n4_1
+.ends

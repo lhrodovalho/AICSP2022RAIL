@@ -1,0 +1,95 @@
+* array
+
+.subckt n1_1 D G S B
+X0 D G X B sky130_fd_pr__nfet_g5v0d10v5 ad=7e+11p pd=4.7e+06u as=7e+11p ps=4.7e+06u w=2.0 l=0.5 m=4
+X1 X G S B sky130_fd_pr__nfet_g5v0d10v5 ad=7e+11p pd=4.7e+06u as=7e+11p ps=4.7e+06u w=2.0 l=0.5 m=4
+.ends
+
+.subckt n1_2 D G S B
+XD D G X B n1_1
+XS X G S B n1_1
+.ends
+
+.subckt n2_1 D G S B
+XL D G S B n1_1
+XR D G S B n1_1
+.ends
+
+.subckt n1_4 D G S B
+XD D G X B n1_2
+XS X G S B n1_2
+.ends
+
+.subckt n2_2 D G S B
+XL D G S B n1_2
+XR D G S B n1_2
+.ends
+
+.subckt n4_1 D G S B
+XL D G S B n2_1
+XR D G S B n2_1
+.ends
+
+.subckt n8_1 D G S B
+XL D G S B n4_1
+XR D G S B n4_1
+.ends
+
+.subckt n16_1 D G S B
+XL D G S B n8_1
+XR D G S B n8_1
+.ends
+
+.subckt n1_8 D G S B
+XD D G X B n1_4
+XS X G S B n1_4
+.ends
+
+.subckt p1_1 D G S B
+X0 D G S B sky130_fd_pr__pfet_g5v0d10v5 ad=7e+11p pd=4.7e+06u as=7e+11p ps=4.7e+06u w=2.0 l=0.5 m=8
+.ends
+
+.subckt p1_2 D G S B
+XD D G X B p1_1
+XS X G S B p1_1
+.ends
+
+.subckt p2_1 D G S B
+XL D G S B p1_1
+XR D G S B p1_1
+.ends
+
+.subckt p1_4 D G S B
+XD D G X B p1_2
+XS X G S B p1_2
+.ends
+
+.subckt p2_2 D G S B
+XL D G S B p1_2
+XR D G S B p1_2
+.ends
+
+.subckt p4_1 D G S B
+XL D G S B p2_1
+XR D G S B p2_1
+.ends
+
+.subckt p8_1 D G S B
+XL D G S B p4_1
+XR D G S B p4_1
+.ends
+
+.subckt p16_1 D G S B
+XL D G S B p8_1
+XR D G S B p8_1
+.ends
+
+.subckt p1_8 D G S B
+XD D G X B p1_4
+XS X G S B p1_4
+.ends
+
+.subckt p64_1 D G S B
+X0 D G S B sky130_fd_pr__pfet_g5v0d10v5 ad=7e+11p pd=4.7e+06u as=7e+11p ps=4.7e+06u w=2.0 l=0.5 m={8*64}
+.ends
+

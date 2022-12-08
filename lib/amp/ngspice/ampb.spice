@@ -1,4 +1,4 @@
-* Operational amplifier A
+* Operational amplifier B
 
 .subckt ampb im ip o ib vdd vss 
 
@@ -6,23 +6,23 @@ x1nb ib  ib  dn1 vss n2_2
 x1na dn1 ib  vss vss n1_4
 
 x2pa dp2 gpa vdd vdd p1_4
-x2pb gpa gpa dp2 bp  p2_2
+x2pb gpa gpa dp2 bpa p2_2
 x2pc gpb gpb gpa vdd p1_4
 x2pd gpb gpb gpa vdd p1_4
 x2nb gpb ib  dn2 vss n2_2
 x2na dn2 ib  vss vss n1_4
 
 x3pa dp3 gpa vdd vdd p1_4
-x3pb gnb gpa dp3 bp  p2_2
+x3pb gnb gpa dp3 bpa p2_2
 x3nd gnb gnb gna vss n1_4
 x3nc gnb gnb gna vss n1_4
-x3nb gna gna dn3 bn  n2_2
+x3nb gna gna dn3 bna n2_2
 x3na dn3 gna vss vss n1_4
 
 x4pa dp4 gpa vdd vdd p1_4
-x4pb x   gpa dp4 bp  p2_2
+x4pb x   gpa dp4 bpa p2_2
 x4pc yl  vss x   im  p4_1
-x4nb kl  kl  yl  bn  n2_2
+x4nb kl  kl  yl  bna n2_2
 x4na yl  kl  vss vss n1_4
 
 x5pa dp5 gpa vdd vdd p1_4
@@ -32,17 +32,17 @@ x5nb kr  kl  yr  bn  n2_2
 x5na yr  kl  vss vss n1_4
 
 x6pa dp6 gpa vdd vdd p1_4
-x6pb jl  gpa dp6 bp  p2_2
+x6pb jl  gpa dp6 bpa p2_2
 x6pc kl  gpb jl  vdd p1_4
 x6nc jl  gnb kl  vss n1_4
-x6nb kl  kl  yl  bn  n2_2
+x6nb kl  kl  yl  bna n2_2
 x6na yl  kl  vss vss n1_4
 
 x7pa dp7 gpa vdd vdd p1_4
-x7pb jr  gpa dp7 bp  p2_2
+x7pb jr  gpa dp7 bpa p2_2
 x7pc kr  gpb jr  vdd p1_4
 x7nc jr  gnb kr  vss n1_4
-x7nb kr  kl  yr  bn  n2_2
+x7nb kr  kl  yr  bna n2_2
 x7na yr  kl  vss vss n1_4
 
 x8pa dp8 jr  vdd vdd p2_2
@@ -50,18 +50,11 @@ x8pb o   jr  dp8 bpb p4_1
 x8nb o   kr  dn8 bnb n4_1
 x8na dn8 kr  vss vss n2_2
 
-x9pa gpa gpa bp  bp  p4_1
-x9na gna gna bn  bn  n4_1
+x9pa gpa gpa bpa bpa p4_1
+x9na gna gna bna bna n4_1
 
 x9pb gpa gpa bpb bpb p4_1
 x9nb gna gna bnb bnb n4_1
-
-*ebp vdd bpb vdd bp  1
-*ebn bnb vss bp  vss 1
-*x9pb o   jr  bpb bpb p4_1
-*x9nb o   kr  bnb bnb n4_1
-*x9pb bp  vss bpb bpb p4_1
-*x9nb bn  vdd bnb bnb n4_1
 
 cbp bp vdd 1p
 cbn bn vss 1p

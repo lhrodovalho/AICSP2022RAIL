@@ -7,8 +7,12 @@ Requires [Open PDKs](https://github.com/RTimothyEdwards/open_pdks) and Sky130 PD
 ### Schematic
 ![alt Opamp-A schematic](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/images/opampa.png)
 
-### [Netlist](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/ngspice/ampa.spice)
+### Netlist
 
+[Link](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/ngspice/ampa.spice)
+
+<details> <summary></summary>
+  
 ```
 * Operational amplifier A
 
@@ -67,15 +71,19 @@ ck o kr 0.8p
 
 .ends
 ```
-
+</details>
 
 ## Opamp-B
 
 ### Schematic
 ![alt Opamp-B schematic](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/images/opampb.png)
 
-### [Netlist](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/ngspice/ampb.spice)
+### Netlist
 
+[Link](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/ngspice/ampb.spice)
+
+<details> <summary></summary>
+  
 ```
 * Operational amplifier B
 
@@ -143,11 +151,20 @@ ck o kr 0.75p
 
 .ends
 ```
+</details>
 
 ## Transistor Arrays
 
 ### Schematic
-### [Netlists]
+
+![alt Array schematic](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/images/array.png)
+
+### Netlist
+
+[Link](https://github.com/lhrodovalho/AICSP2022RAIL/blob/main/lib/amp/ngspice/array.spice)
+
+<details> <summary></summary>
+
 ```
 * array
 

@@ -1,6 +1,6 @@
 # RR/IO Bulk Driven Class AB OpAmp with Improved Composite Transistors using SkyWater 130 nm PDK
 
-Requires [Open PDKs](https://github.com/RTimothyEdwards/open_pdks) and Sky130 PDK to run simulations
+Requires [Open PDKs](https://github.com/RTimothyEdwards/open_pdks) and [Sky130 PDK](https://github.com/google/skywater-pdk) to run simulations
 
 ## Opamp-A
 
